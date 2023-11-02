@@ -1,0 +1,67 @@
+# proyecto2digital2
+//*********************************************************************************************
+// Proyecto 2 - Digital 2
+// Pilar Trujillo 21305
+//*********************************************************************************************
+#include <Arduino.h>
+
+//*********************************************************************************************
+// Sensor de temperatura
+//*********************************************************************************************
+#define ADC_VREF_mV 3300.0 // en mV
+#define ADC_RESOLUTION 4096.0
+#define PIN_LM35 34 // ESP32 pin GPIO34 (ADC6) conectado al LM35
+
+float tempC;
+
+// volatile bool readTemperature = false; // Inicializar como falso
+
+void medirSensor(void);
+
+/*void IRAM_ATTR isr()
+{
+  readTemperature = true;
+}*/
+//*********************************************************************************************
+// Setup
+//*********************************************************************************************
+
+void setup()
+{
+  Serial.begin(115200);  // Inicia la comunicación con la computadora
+  Serial2.begin(115200); // Inicia la comunicación con la Tiva C
+
+  
+}
+//*********************************************************************************************
+// loop principal
+//*********************************************************************************************
+
+void loop()
+{
+  while (Serial2.available() > 0)
+  {
+    char lectemp = Serial2.read();
+
+    if (lectemp == 'C')
+    {
+      medirSensor();
+      //Serial2.println("C");
+      Serial2.println(tempC);
+        Serial.println(tempC);
+
+
+      // delay(100);
+    }
+  }
+  // delay(250);
+}
+//*********************************************************************************************
+// medir sensor
+//*********************************************************************************************
+void medirSensor()
+{
+  int lecturaADC = analogRead(PIN_LM35);
+  float milliVolt = lecturaADC * (ADC_VREF_mV / ADC_RESOLUTION);
+  tempC = milliVolt / 10.0;
+}
